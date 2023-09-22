@@ -1,4 +1,7 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useState } from 'react';
+import React, {
+	PropsWithChildren, createContext, useContext, useState,
+} from 'react';
+import { noop } from '../utils';
 
 export enum LoadingStatus {
   INIT = 'INIT',
@@ -9,19 +12,19 @@ export enum LoadingStatus {
 
 const LoadingStateDefault = LoadingStatus.INIT;
 const LoadingState = createContext(LoadingStateDefault);
-const SetLoadingState = createContext((_a: LoadingStatus) => {});
+const SetLoadingState = createContext(noop as (_a: LoadingStatus) => void);
 
-export const LoadingStateProvider = (props: PropsWithChildren) => {
-  const [loadingState, setLoadingState] = useState(LoadingStateDefault);
+export const LoadingStateProvider = ({ children }: PropsWithChildren) => {
+	const [loadingState, setLoadingState] = useState(LoadingStateDefault);
 
-  return (
-    <LoadingState.Provider value={loadingState}>
-      <SetLoadingState.Provider value={setLoadingState}>
-        {props.children}
-      </SetLoadingState.Provider>
-    </LoadingState.Provider>
-  )
-}
+	return (
+		<LoadingState.Provider value={loadingState}>
+			<SetLoadingState.Provider value={setLoadingState}>
+				{children}
+			</SetLoadingState.Provider>
+		</LoadingState.Provider>
+	);
+};
 
 export const useLoadingState = () => useContext(LoadingState);
 export const useSetLoadingState = () => useContext(SetLoadingState);

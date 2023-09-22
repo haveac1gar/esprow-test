@@ -6,7 +6,6 @@ import { Context, useLoadingState } from './state';
 
 const Container = styled.div`
 	padding: 16px;
-	width: 100%;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -19,12 +18,14 @@ const MainContainer = (props: PropsWithChildren) => {
 		<Container>
 			<FileLoader />
 			<br />
-			State: {state}
+			State:
+			{' '}
+			{state}
 			<br />
 			<DataTable />
 		</Container>
 	);
-}
+};
 
 const App = () => {
 	return (

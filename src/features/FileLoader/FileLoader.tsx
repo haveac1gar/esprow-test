@@ -1,47 +1,51 @@
 import React, { useCallback } from 'react';
-import { EntryFileRaw, LoadingStatus, useLoadingState, useSetEntryFile, useSetLoadingState } from '../../state';
+import {
+	EntryFileType,
+	LoadingStatus, useSetEntryFile, useSetLoadingState,
+} from '../../state';
 
 export const FileLoader = () => {
-  const setEntryFile = useSetEntryFile();
-  const setLoadingState = useSetLoadingState();
+	const setEntryFile = useSetEntryFile();
+	const setLoadingState = useSetLoadingState();
 
-  const handleFileChosen = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoadingState(LoadingStatus.LOADING)
+	const handleFileChosen = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+		if (!setLoadingState) return;
 
-    try {
-      e.preventDefault();
+		setLoadingState(LoadingStatus.LOADING);
 
-      const files = e.target.files;
+		try {
+			e.preventDefault();
 
-      if (!files || !files[0]) {
-        setLoadingState(LoadingStatus.ERROR);
-        return;
-      }
+			const { files } = e.target;
 
-      const fileReader = new FileReader();
+			if (!files || !files[0]) {
+				setLoadingState(LoadingStatus.ERROR);
+				return;
+			}
 
-      fileReader.onloadend = () => {
-        try {
-          const entryFile = JSON.parse(fileReader.result as string) as EntryFileRaw;
-          setEntryFile(entryFile);
-          console.log('set Loading state OPENED')
-          setLoadingState(LoadingStatus.OPENED);
-        } catch (e) {
-          setLoadingState(LoadingStatus.ERROR);
-        }
-      }
+			const fileReader = new FileReader();
 
-      fileReader.readAsText(files[0]);
-    } catch (e) {
-      setLoadingState(LoadingStatus.ERROR);
-    }
-  }, []);
+			fileReader.onloadend = () => {
+				try {
+					const entryFile = JSON.parse(fileReader.result as string) as EntryFileType;
+					setEntryFile(entryFile);
+					setLoadingState(LoadingStatus.OPENED);
+				} catch (e) {
+					setLoadingState(LoadingStatus.ERROR);
+				}
+			};
 
-  return (
-    <input
-      type='file'
-      accept='json'
-      onChange={handleFileChosen}
-    />
-  )
+			fileReader.readAsText(files[0]);
+		} catch (e) {
+			setLoadingState(LoadingStatus.ERROR);
+		}
+	}, [setEntryFile, setLoadingState]);
+
+	return (
+		<input
+			type="file"
+			accept="json"
+			onChange={handleFileChosen}
+		/>
+	);
 };

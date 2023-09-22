@@ -1916,6 +1916,13 @@
   resolved "https://registry.yarnpkg.com/@babel/regjsgen/-/regjsgen-0.8.0.tgz#f0ba69b075e1f05fb2825b7fad991e7adbb18310"
   integrity sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==
 
+"@babel/runtime@^7.0.0":
+  version "7.22.15"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.22.15.tgz#38f46494ccf6cf020bd4eed7124b425e83e523b8"
+  integrity sha512-T0O+aa+4w0u06iNmapipJXMV4HoUir03hpx3/YqXXhu9xim3w+dVphjFWl1OH8NbZHw5Lbm9k45drDkgq2VNNA==
+  dependencies:
+    regenerator-runtime "^0.14.0"
+
 "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.20.7", "@babel/runtime@^7.8.4":
   version "7.21.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.21.5.tgz#8492dddda9644ae3bda3b45eabe87382caee7200"
@@ -2971,6 +2978,13 @@
   version "18.2.4"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.4.tgz#13f25bfbf4e404d26f62ac6e406591451acba9e0"
   integrity sha512-G2mHoTMTL4yoydITgOGwWdWMVd8sNgyEP85xVmMKAPUBwQWm9wBPQUmvbeF4V3WBY1P7mmL4BkjQ0SqUpf1snw==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-window@^1.8.5":
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/@types/react-window/-/react-window-1.8.5.tgz#285fcc5cea703eef78d90f499e1457e9b5c02fc1"
+  integrity sha512-V9q3CvhC9Jk9bWBOysPGaWy/Z0lxYcTXLtLipkt2cnRj1JOSFNF7wqGpkScSXMgBwC+fnVRg/7shwgddBG5ICw==
   dependencies:
     "@types/react" "*"
 
@@ -7681,6 +7695,11 @@ memfs@^3.1.2, memfs@^3.4.3:
   dependencies:
     fs-monkey "^1.0.3"
 
+"memoize-one@>=3.1.1 <6":
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.2.1.tgz#8337aa3c4335581839ec01c3d594090cebe8f00e"
+  integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
+
 merge-descriptors@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
@@ -9069,6 +9088,19 @@ react-scripts@^5.0.1:
   optionalDependencies:
     fsevents "^2.3.2"
 
+react-virtualized-auto-sizer@^1.0.20:
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/react-virtualized-auto-sizer/-/react-virtualized-auto-sizer-1.0.20.tgz#d9a907253a7c221c52fa57dc775a6ef40c182645"
+  integrity sha512-OdIyHwj4S4wyhbKHOKM1wLSj/UDXm839Z3Cvfg2a9j+He6yDa6i5p0qQvEiCnyQlGO/HyfSnigQwuxvYalaAXA==
+
+react-window@^1.8.9:
+  version "1.8.9"
+  resolved "https://registry.yarnpkg.com/react-window/-/react-window-1.8.9.tgz#24bc346be73d0468cdf91998aac94e32bc7fa6a8"
+  integrity sha512-+Eqx/fj1Aa5WnhRfj9dJg4VYATGwIUP2ItwItiJ6zboKWA6EX3lYDAXfGF2hyNqplEprhbtjbipiADEcwQ823Q==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    memoize-one ">=3.1.1 <6"
+
 react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
@@ -9147,6 +9179,11 @@ regenerator-runtime@^0.13.11, regenerator-runtime@^0.13.9:
   version "0.13.11"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
   integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
+
+regenerator-runtime@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.14.0.tgz#5e19d68eb12d486f797e15a3c6a918f7cec5eb45"
+  integrity sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==
 
 regenerator-transform@^0.15.1:
   version "0.15.1"
@@ -10232,6 +10269,11 @@ tryer@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/tryer/-/tryer-1.0.1.tgz#f2c85406800b9b0f74c9f7465b81eaad241252f8"
   integrity sha512-c3zayb8/kWWpycWYg87P71E1S1ZL6b6IJxfb5fvsUgsf0S2MVGaDhDXXjDMpdCpfWXqptc+4mXwmiy1ypXqRAA==
+
+ts-essentials@^9.4.0:
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/ts-essentials/-/ts-essentials-9.4.0.tgz#1d841fee4cd1485f84dec82bce828f90a6cfdd92"
+  integrity sha512-s4BzWZmTh926caZO7XF7MMbwCn1BioT3s3r9hT8ARnwW//30OD0XioEsMyq3ORAHP/deN4Zkst2ZvxXmL+tG6g==
 
 ts-interface-checker@^0.1.9:
   version "0.1.13"
