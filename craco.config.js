@@ -1,4 +1,7 @@
 const config = {
+  eslint: {
+    enable: false,
+  },
   webpack: {
     configure: (webpackConfig) => {
       return {
