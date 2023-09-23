@@ -7,5 +7,6 @@ export const GlobalStyle = createGlobalStyle`
     font-family: 'Ubuntu Mono', monospace;
     background: #181815;
     color: #F0F4D3;
+    box-sizing: border-box;
   }
 `;

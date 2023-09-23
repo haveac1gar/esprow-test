@@ -1,18 +1,13 @@
 import React, { PropsWithChildren } from 'react';
-import { LoadingStateProvider } from './LoadingState';
 import { EntryFileProvider } from './EntryFile';
+import { OpenFileProgressProvider } from './OpenFileProgress';
 
-export {
-	useSetEntryFile, useEntryFile, useEntryFileFields, type EntryFileType,
-} from './EntryFile';
-export { useSetLoadingState, useLoadingState, LoadingStatus } from './LoadingState';
-
-export const Context = ({ children }: PropsWithChildren) => {
+export const StateProvider = ({ children }: PropsWithChildren) => {
 	return (
-		<LoadingStateProvider>
-			<EntryFileProvider>
+		<EntryFileProvider>
+			<OpenFileProgressProvider>
 				{children}
-			</EntryFileProvider>
-		</LoadingStateProvider>
+			</OpenFileProgressProvider>
+		</EntryFileProvider>
 	);
 };

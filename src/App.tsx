@@ -1,38 +1,14 @@
-import React, { PropsWithChildren } from 'react';
-import styled from 'styled-components';
+import React from 'react';
 import { GlobalStyle } from './globalStyle';
-import { FileLoader, DataTable } from './features';
-import { Context, useLoadingState } from './state';
-
-const Container = styled.div`
-	padding: 16px;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-`;
-
-const MainContainer = (props: PropsWithChildren) => {
-	const state = useLoadingState();
-
-	return (
-		<Container>
-			<FileLoader />
-			<br />
-			State:
-			{' '}
-			{state}
-			<br />
-			<DataTable />
-		</Container>
-	);
-};
+import { MainPage } from './pages';
+import { StateProvider } from './state';
 
 const App = () => {
 	return (
-		<Context>
+		<StateProvider>
 			<GlobalStyle />
-			<MainContainer />
-		</Context>
+			<MainPage />
+		</StateProvider>
 	);
 };
 
