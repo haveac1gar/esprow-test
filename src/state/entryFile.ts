@@ -31,6 +31,28 @@ const entryFileSlice = createSlice({
 				state.map[item.id] = item;
 			}
 		},
+		sortBy: (
+			state,
+			action: PayloadAction<{ type: 'ASC' | 'DESC', field: keyof EntryFileRowUI }>,
+		) => {
+			const { type, field } = action.payload;
+			state.arr = state.arr.sort((a, b) => {
+				if (
+					typeof a !== typeof b ||
+					a[field] === b[field]
+				) return 0;
+
+				if (typeof a === 'boolean') {
+					if (type === 'ASC') return Number(a[field]) - Number(b[field]);
+
+					return Number(a[field]) - Number(b[field]);
+				}
+
+				if (type === 'ASC') return a[field] > b[field] ? 1 : -1;
+
+				return b[field] > a[field] ? 1 : -1;
+			});
+		},
 		updateField: (
 			state,
 			action: PayloadAction<{
@@ -56,7 +78,7 @@ const entryFileSlice = createSlice({
 	},
 });
 
-export const { loadFile, updateField } = entryFileSlice.actions;
+export const { loadFile, sortBy, updateField } = entryFileSlice.actions;
 export default entryFileSlice.reducer;
 
 export const itemFieldSelector = createSelector(

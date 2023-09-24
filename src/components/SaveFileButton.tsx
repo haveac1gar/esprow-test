@@ -3,10 +3,6 @@ import styled from 'styled-components';
 import { EntryFile } from '../types';
 import { useAppSelector } from '../state';
 
-const Container = styled.div`
-
-`;
-
 const Button = styled.button`
 	outline: none;
 	padding: 16px;
@@ -38,12 +34,10 @@ export const SaveFileButton = ({ file }: { file: EntryFile }) => {
 	if (!filename) return null;
 
 	return (
-		<Container>
-			<Button onClick={onClick} type="button" disabled={!filename}>
-				Save
-				{' '}
-				{filename}
-			</Button>
-		</Container>
+		<Button onClick={onClick} type="button">
+			Save
+			{' '}
+			{filename}
+		</Button>
 	);
 };

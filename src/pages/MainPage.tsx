@@ -1,5 +1,7 @@
 import React from 'react';
-import { OpenFileButton, OpenFileStatus, SaveFileButton, VirtualizedList } from '../components';
+import {
+	OpenFileButton, OpenFileStatus, OrderButtons, SaveFileButton, VirtualizedList,
+} from '../components';
 import styled from 'styled-components';
 import { useAppSelector } from '../state';
 
@@ -25,6 +27,7 @@ export const MainPage = () => {
 			<Header>
 				<OpenFileButton />
 				<OpenFileStatus />
+				<OrderButtons />
 				<SaveFileButton file={entryFile} />
 			</Header>
 			<VirtualizedList items={entryFile} />

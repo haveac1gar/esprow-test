@@ -58,7 +58,7 @@ export const VirtualizedList = ({
 
 				const newScrollTop = containerRef.current.scrollTop;
 
-				if (Math.abs(newScrollTop - prevScrollTop) <= containerHeight / 4) return prevScrollTop;
+				if (Math.abs(newScrollTop - prevScrollTop) <= containerHeight / 2) return prevScrollTop;
 
 				return newScrollTop;
 			});
