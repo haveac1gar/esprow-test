@@ -1,15 +1,18 @@
 import React from 'react';
-import { OPEN_FILE_PROGRESS } from '../types';
+import { openFileProgressSelector, useAppSelector } from '../state';
+import styled from 'styled-components';
 
-type OpenFileStatusProps = {
-  status: OPEN_FILE_PROGRESS,
-}
-export const OpenFileStatus = ({ status }: OpenFileStatusProps) => {
+const Container = styled.div`
+	flex: 1;
+`;
+export const OpenFileStatus = () => {
+	const progressStatus = useAppSelector(state => openFileProgressSelector(state));
+
 	return (
-		<>
+		<Container>
 			Status:
 			{' '}
-			{status}
-		</>
+			{progressStatus}
+		</Container>
 	);
 };

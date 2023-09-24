@@ -1,7 +1,8 @@
-import { StrictOmit } from 'ts-essentials';
+import { Opaque, StrictOmit } from 'ts-essentials';
 
+export type ItemId = Opaque<string, 'ItemId'>;
 export type EntryFileRow = {
-  id: string;
+  id: ItemId;
   isActive: boolean;
   picture: string;
   age: number;
@@ -13,6 +14,7 @@ export type EntryFileRow = {
 };
 
 export type EntryFile = EntryFileRow[];
+export type EntryFileMap = Record<ItemId, EntryFileRow>;
 
 export type EntryFileRowUI = StrictOmit<EntryFileRow, 'id'>;
 export type EntryFileUI = EntryFileRowUI[];
@@ -22,13 +24,4 @@ export enum OPEN_FILE_PROGRESS {
   OPENING = 'OPENING',
   ERROR = 'ERROR',
   OPEN = 'OPEN'
-}
-
-export enum FIELD_TYPE {
-  TEXT = 'TEXT',
-  NUMBER = 'NUMBER',
-  EMAIL = 'EMAIL',
-  DATE = 'DATE',
-  BOOLEAN = 'BOOLEAN',
-  TEXTAREA = 'TEXTAREA',
 }

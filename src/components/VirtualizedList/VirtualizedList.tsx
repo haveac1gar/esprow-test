@@ -4,30 +4,30 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
-import { noop } from '../../utils';
+import noop from 'lodash/noop';
 import { calcVirtualizedList } from './utils';
+import { ITEM_ROW_HEIGHT, MemoizedItemRow } from '../ItemRow';
+import { EntryFile, EntryFileRow } from '../../types';
 
-type VirtualizedListProps<T> = {
-  rowHeight: number;
-  RowComponent: (a: T) => JSX.Element;
-  items: T[],
+type VirtualizedListProps = {
+  items: EntryFile,
 };
 
 const Container = styled.div`
   flex: 1;
   overflow-y: scroll;
 `;
-const CustomHeight = styled.div<{ height: number }>`
+const CustomHeight = styled.div.attrs<{ $height: number }>(props => ({
+	style: {
+		height: props.$height,
+	},
+}))`
   width: 100%;
-  height: ${props => props.height}px;
 `;
 
-export const VirtualizedList = <T extends { id: string }>({
-	RowComponent,
+export const VirtualizedList = ({
 	items,
-	rowHeight,
-}: VirtualizedListProps<T>) => {
+}: VirtualizedListProps) => {
 	const [containerHeight, setContainerHeight] = useState(0);
 	const [scrollTop, setScrollTop] = useState(0);
 	const containerRef = useRef<null | HTMLDivElement>(null);
@@ -52,30 +52,35 @@ export const VirtualizedList = <T extends { id: string }>({
 		const container = containerRef.current;
 		if (!container) return noop;
 
-		const updateScrollTop = throttle(() => {
-			if (!containerRef.current) return;
+		const updateScrollTop = () => {
+			setScrollTop((prevScrollTop) => {
+				if (!containerRef.current) return prevScrollTop;
 
-			setScrollTop(containerRef.current.scrollTop);
-		}, 50);
+				const newScrollTop = containerRef.current.scrollTop;
+
+				if (Math.abs(newScrollTop - prevScrollTop) <= containerHeight / 4) return prevScrollTop;
+
+				return newScrollTop;
+			});
+		};
 
 		container.addEventListener('scroll', updateScrollTop);
 
 		return () => {
 			container.removeEventListener('scroll', updateScrollTop);
 		};
-	}, []);
+	}, [containerHeight]);
 
 	const {
 		firstVisibleItemIndex, lastVisibleItemIndex, offsetBottom, offsetTop,
 	} = useMemo(() => calcVirtualizedList({
 		scrollTop,
 		containerHeight,
-		rowHeight,
+		rowHeight: ITEM_ROW_HEIGHT,
 		itemsLength: items.length,
 	}), [
 		scrollTop,
 		containerHeight,
-		rowHeight,
 		items.length,
 	]);
 
@@ -84,25 +89,13 @@ export const VirtualizedList = <T extends { id: string }>({
 		[items, firstVisibleItemIndex, lastVisibleItemIndex]
 	);
 
-	const renderRow = useCallback((el: T) => <RowComponent key={el.id} {...el} />, [RowComponent]);
-
-	// return (
-	// 	<Container ref={containerRef}>
-	// 		{items.map(renderRow)}
-	// 	</Container>
-	// );
-
-	// useEffect(() => {
-	// 	console.log({
-	// 		firstVisibleItemIndex, lastVisibleItemIndex, itemsLength: items.length, visibleItemsLength: visibleItems.length,
-	// 	});
-	// }, [firstVisibleItemIndex, lastVisibleItemIndex, items.length, visibleItems.length]);
+	const renderRow = useCallback((row: EntryFileRow) => <MemoizedItemRow key={row.id} {...row} />, []);
 
 	return (
 		<Container ref={containerRef}>
-			<CustomHeight height={offsetTop} />
+			<CustomHeight $height={offsetTop} />
 			{visibleItems.map(renderRow)}
-			<CustomHeight height={offsetBottom} />
+			<CustomHeight $height={offsetBottom} />
 		</Container>
 	);
 };

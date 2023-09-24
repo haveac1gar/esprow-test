@@ -1,14 +1,23 @@
 import React, { useCallback } from 'react';
 import { EntryFile, OPEN_FILE_PROGRESS } from '../types';
+import { loadFile, useAppDispatch, setProgress } from '../state';
+import styled from 'styled-components';
 
 export type OpenFileButtonProps = {
   onProgressChange: (a: OPEN_FILE_PROGRESS) => void,
   onFileOpened: (a: EntryFile) => void,
 };
 
-export const OpenFileButton = ({ onProgressChange, onFileOpened }: OpenFileButtonProps) => {
+const Input = styled.input`
+	outline: none;
+	font-size: 16px;
+`;
+
+export const OpenFileButton = () => {
+	const dispatch = useAppDispatch();
+
 	const handleFileChosen = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		onProgressChange(OPEN_FILE_PROGRESS.OPENING);
+		dispatch(setProgress(OPEN_FILE_PROGRESS.OPENING));
 
 		try {
 			e.preventDefault();
@@ -16,32 +25,33 @@ export const OpenFileButton = ({ onProgressChange, onFileOpened }: OpenFileButto
 			const { files } = e.target;
 
 			if (!files || !files[0]) {
-				onProgressChange(OPEN_FILE_PROGRESS.ERROR);
+				dispatch(setProgress(OPEN_FILE_PROGRESS.ERROR));
 				return;
 			}
 
 			const fileReader = new FileReader();
+			const filename = files[0].name;
 
 			fileReader.onloadend = () => {
 				try {
 					const entryFile = JSON.parse(fileReader.result as string) as EntryFile;
 					if (!Array.isArray(entryFile)) throw Error('JSON file is not an array');
 
-					onFileOpened(entryFile);
-					onProgressChange(OPEN_FILE_PROGRESS.OPEN);
+					dispatch(loadFile({ data: entryFile, filename }));
+					dispatch(setProgress(OPEN_FILE_PROGRESS.OPEN));
 				} catch (e) {
-					onProgressChange(OPEN_FILE_PROGRESS.ERROR);
+					dispatch(setProgress(OPEN_FILE_PROGRESS.ERROR));
 				}
 			};
 
 			fileReader.readAsText(files[0]);
 		} catch (e) {
-			onProgressChange(OPEN_FILE_PROGRESS.ERROR);
+			dispatch(setProgress(OPEN_FILE_PROGRESS.ERROR));
 		}
-	}, [onProgressChange, onFileOpened]);
+	}, [dispatch]);
 
 	return (
-		<input
+		<Input
 			type="file"
 			accept="json"
 			onChange={handleFileChosen}

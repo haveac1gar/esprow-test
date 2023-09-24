@@ -32,7 +32,7 @@ export const calcVirtualizedList = ({
 		Math.ceil(itemsLength / itemsPerBatch),
 	);
 	const firstVisibleItemIndex = Math.max((firstVisibleBatchIndex - 1) * itemsPerBatch, 0) || 0;
-	const lastVisibleItemIndex = Math.min(lastVisibleBatchIndex * itemsPerBatch, itemsLength) || itemsLength;
+	const lastVisibleItemIndex = Math.min(lastVisibleBatchIndex * itemsPerBatch, itemsLength) || 0;
 
 	return {
 		offsetBottom: (itemsLength - lastVisibleItemIndex) * rowHeight || 0,
