@@ -9,4 +9,4 @@ yarn start
 ```
 
 ### Generated file:
-`https://raw.githubusercontent.com/haveac1gar/esprow-test/main/generated.json`
+https://raw.githubusercontent.com/haveac1gar/esprow-test/main/generated.json
