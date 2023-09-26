@@ -1,23 +1,30 @@
-import React, { ChangeEvent, PropsWithChildren, useCallback } from 'react';
-import { EntryFileRowUI, ItemId } from '../../types';
+import React, {
+	ChangeEvent, PropsWithChildren, useCallback, useMemo,
+} from 'react';
+import { FIELD_TYPE, ItemId } from '../../types';
 import styled from 'styled-components';
 
-import { zonedTimeToUtc } from 'date-fns-tz';
-import { format } from 'date-fns';
 import {
 	itemFieldSelector, updateField, useAppDispatch, useAppSelector,
 } from '../../state';
+import { getDateStoredValue, getDateUIValue, getFieldType } from './utils';
 
 type EditableFieldProps = {
-	name: keyof EntryFileRowUI;
+	name: string;
 	id: ItemId;
 };
 
 const Container = styled.div`
-	display: inline-flex;
+	display: flex;
 	margin: 0 48px 8px 0;
+	width: calc((100% - 48px * 2) / 3);
 	flex-direction: column;
 	align-items: flex-start;
+	border-bottom: 1px solid lightgrey;
+
+	&:nth-child(3n) {
+		margin-right: 0;
+	}
 `;
 const Label = styled.label`
 	font-size: 12px;
@@ -27,13 +34,12 @@ const Label = styled.label`
 `;
 const Input = styled.input`
 	font-size: 14px;
+	height: 24px;
 	padding: 4px;
-	min-width: 180px;
-	align: left;
+	width: 100%;
+	display: flex;
 	outline: none;
 	border: none;
-	border-bottom: 1px solid grey;
-	margin-bottom: 1px;
 	transition: all .05s ease;
 
 	&[type=checkbox] {
@@ -41,24 +47,32 @@ const Input = styled.input`
 	}
 
 	&:focus {
-		border-bottom: 2px solid red;
 		background: lightgray;
-		margin-bottom: 0;
 	}
 `;
+const PlainText = styled.div`
+	font-size: 14px;
+	height: 24px;
+	padding: 4px;
+	width: 100%;
+	align: left;
+	outline: none;
+	border: none;
+	color: #90917E;
+`;
 const Textarea = styled.textarea`
-	font-size: 16px;
-	width: 400px;
+	font-size: 14px;
+	line-height: 20px;
+	height: 73px;
+	padding: 4px;
+	width: 100%;
 	outline: none;
 	border: none;
 	resize: none;
-	border-bottom: 1px solid grey;
-	margin-bottom: 1px;
 	transition: all .05s ease;
 
 	&:focus {
-		border-bottom: 2px solid red;
-		margin-bottom: 0;
+		background: lightgray;
 	}
 `;
 
@@ -75,8 +89,8 @@ const FieldWrapper = ({ name, id, children }: PropsWithChildren<EditableFieldPro
 	);
 };
 
-export const CheckboxField = React.memo(({ name, id }: EditableFieldProps) => {
-	const value = useAppSelector(state => itemFieldSelector(state, name, id));
+const CheckboxField = React.memo(({ name, id }: EditableFieldProps) => {
+	const value = useAppSelector(state => itemFieldSelector(state, name, id)) as boolean;
 	const dispatch = useAppDispatch();
 	const inputId = `${name}-${id}`;
 
@@ -93,30 +107,26 @@ export const CheckboxField = React.memo(({ name, id }: EditableFieldProps) => {
 			<Input
 				id={inputId}
 				type="checkbox"
-				checked={Boolean(value)}
+				checked={value}
 				onChange={onChange}
 			/>
 		</FieldWrapper>
 	);
 });
 
-export const DateField = React.memo(({ name, id }: EditableFieldProps) => {
-	const value = useAppSelector(state => itemFieldSelector(state, name, id));
+const DateField = React.memo(({ name, id }: EditableFieldProps) => {
+	const value = useAppSelector(state => itemFieldSelector(state, name, id)) as string;
 	const dispatch = useAppDispatch();
 	const inputId = `${name}-${id}`;
 
-	const inputValue = format(
-		zonedTimeToUtc(String(value).split(' ')[0], String(value).split(' ')[1]).getTime(),
-		'yyyy-MM-dd',
-	);
+	const inputValue = getDateUIValue(value);
 
 	const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		try {
-			const newValue = format(new Date(e.target.value).getTime(), "yyyy-MM-dd'T'HH:mm:ss xxx");
 			dispatch(updateField({
 				id,
 				name,
-				value: newValue,
+				value: getDateStoredValue(e.target.value),
 			}));
 		// eslint-disable-next-line no-empty
 		} catch (_e) {}
@@ -134,8 +144,8 @@ export const DateField = React.memo(({ name, id }: EditableFieldProps) => {
 	);
 });
 
-export const TextField = React.memo(({ name, id, type = 'text' }: EditableFieldProps & { type?: 'email' | 'text'}) => {
-	const value = useAppSelector(state => itemFieldSelector(state, name, id));
+const TextField = React.memo(({ name, id, type = 'text' }: EditableFieldProps & { type?: 'email' | 'text'}) => {
+	const value = useAppSelector(state => itemFieldSelector(state, name, id)) as string;
 	const dispatch = useAppDispatch();
 	const inputId = `${name}-${id}`;
 
@@ -152,15 +162,15 @@ export const TextField = React.memo(({ name, id, type = 'text' }: EditableFieldP
 			<Input
 				id={inputId}
 				type={type}
-				value={String(value)}
+				value={value}
 				onChange={onChange}
 			/>
 		</FieldWrapper>
 	);
 });
 
-export const NumberField = React.memo(({ name, id }: EditableFieldProps) => {
-	const value = useAppSelector(state => itemFieldSelector(state, name, id));
+const NumberField = React.memo(({ name, id }: EditableFieldProps) => {
+	const value = useAppSelector(state => itemFieldSelector(state, name, id)) as number;
 	const dispatch = useAppDispatch();
 	const inputId = `${name}-${id}`;
 
@@ -184,8 +194,8 @@ export const NumberField = React.memo(({ name, id }: EditableFieldProps) => {
 	);
 });
 
-export const TextareaField = React.memo(({ name, id }: EditableFieldProps) => {
-	const value = useAppSelector(state => itemFieldSelector(state, name, id));
+const TextareaField = React.memo(({ name, id }: EditableFieldProps) => {
+	const value = useAppSelector(state => itemFieldSelector(state, name, id)) as string;
 	const dispatch = useAppDispatch();
 	const inputId = `${name}-${id}`;
 
@@ -202,9 +212,55 @@ export const TextareaField = React.memo(({ name, id }: EditableFieldProps) => {
 			<Textarea
 				id={inputId}
 				rows={4}
-				value={String(value)}
+				value={value}
 				onChange={onChange}
 			/>
 		</FieldWrapper>
 	);
+});
+
+const JSONLIkeField = React.memo(({ name, id }: EditableFieldProps) => (
+	<FieldWrapper name={name} id={id}>
+		<PlainText>
+			{'[{ JSON-like value }]'}
+		</PlainText>
+	</FieldWrapper>
+));
+
+export const EditableField = React.memo(({ name, id }: EditableFieldProps) => {
+	const value = useAppSelector(state => itemFieldSelector(state, name, id));
+	const valueType = useMemo(() => getFieldType(value), [value]);
+
+	if (valueType === FIELD_TYPE.BOOLEAN) {
+		return <CheckboxField name={name} id={id} />;
+	}
+
+	if (valueType === FIELD_TYPE.DATE) {
+		return <DateField name={name} id={id} />;
+	}
+
+	if (valueType === FIELD_TYPE.EMAIL) {
+		return <TextField name={name} id={id} type="email" />;
+	}
+
+	if (name === 'id') return null;
+
+	if (valueType === FIELD_TYPE.JSON_LIKE_VALUE) {
+		return <JSONLIkeField name={name} id={id} />;
+	}
+
+	if (valueType === FIELD_TYPE.LONG_TEXT) {
+		return <TextareaField name={name} id={id} />;
+	}
+
+	if (valueType === FIELD_TYPE.NUMBER) {
+		return <NumberField name={name} id={id} />;
+	}
+
+	if (valueType === FIELD_TYPE.TEXT) {
+		return <TextField name={name} id={id} />;
+	}
+
+	// TODO: Unknown
+	return null;
 });

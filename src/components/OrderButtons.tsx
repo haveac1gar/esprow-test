@@ -1,7 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import { sortBy, useAppDispatch, useAppSelector } from '../state';
-import { EntryFileRowUI } from '../types';
 
 const Container = styled.div`
 	display: flex;
@@ -20,6 +19,7 @@ const Button = styled.button`
 
 export const OrderButtons = () => {
 	const filename = useAppSelector(state => state.entryFile.name);
+	const fieldNames = useAppSelector(state => state.entryFile.fieldNames);
 	const dispatch = useAppDispatch();
 
 	const orderRef = useRef<HTMLSelectElement | null>(null);
@@ -33,7 +33,7 @@ export const OrderButtons = () => {
 
 		dispatch(sortBy({
 			type: order.value as 'ASC' | 'DESC',
-			field: field.value as keyof EntryFileRowUI,
+			field: field.value,
 		}));
 	}, [dispatch]);
 
@@ -51,27 +51,9 @@ export const OrderButtons = () => {
 					</option>
 				</select>
 				<select id="sortingField" ref={fieldRef}>
-					<option value="isActive">
-						isActive
-					</option>
-					<option value="name">
-						name
-					</option>
-					<option value="picture">
-						picture
-					</option>
-					<option value="address">
-						address
-					</option>
-					<option value="registered">
-						registered
-					</option>
-					<option value="email">
-						email
-					</option>
-					<option value="age">
-						age
-					</option>
+					{fieldNames.map(name => (name === 'id' ? null : (
+						<option key={name} value={name}>{name}</option>
+					)))}
 				</select>
 			</SortingContainer>
 			<Button onClick={onClick} type="button">
