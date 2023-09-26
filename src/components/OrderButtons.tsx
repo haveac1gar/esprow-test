@@ -19,7 +19,8 @@ const Button = styled.button`
 
 export const OrderButtons = () => {
 	const filename = useAppSelector(state => state.entryFile.name);
-	const fieldNames = useAppSelector(state => state.entryFile.fieldNames);
+	const fieldNamesTypes = useAppSelector(state => state.entryFile.fieldNamesTypes);
+	const fieldNames = Object.keys(fieldNamesTypes);
 	const dispatch = useAppDispatch();
 
 	const orderRef = useRef<HTMLSelectElement | null>(null);

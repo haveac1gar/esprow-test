@@ -1,7 +1,8 @@
 import React from 'react';
-import { EntryFileRow } from '../../types';
+import { ItemId } from '../../types';
 import styled from 'styled-components';
 import { EditableField } from './EditableField';
+import { useAppSelector } from '../../state';
 
 const Container = styled.div<{ $isOdd: boolean }>`
   width: 100%;
@@ -15,8 +16,9 @@ const Container = styled.div<{ $isOdd: boolean }>`
 	background: ${({ $isOdd }) => ($isOdd ? 'lightgreen' : 'lightyellow')};
 `;
 
-const ItemRow = ({ id, isOdd, ...rest }: EntryFileRow & { isOdd: boolean }) => {
-	const fieldNames = Object.keys(rest);
+const ItemRow = ({ id, isOdd }: { isOdd: boolean, id: ItemId }) => {
+	const fieldNamesTypes = useAppSelector(state => state.entryFile.fieldNamesTypes);
+	const fieldNames = Object.keys(fieldNamesTypes);
 
 	if (!fieldNames.length) return null;
 

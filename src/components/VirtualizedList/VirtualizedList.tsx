@@ -7,7 +7,7 @@ import debounce from 'lodash/debounce';
 import noop from 'lodash/noop';
 import { calcVirtualizedList } from './utils';
 import { MemoizedItemRow } from '../ItemRow';
-import { EntryFile, EntryFileRow } from '../../types';
+import { EntryFile, ItemId } from '../../types';
 
 type VirtualizedListProps = {
   items: EntryFile,
@@ -95,12 +95,12 @@ export const VirtualizedList = ({
 		items.length,
 	]);
 
-	const visibleItems = useMemo(
-		() => items.slice(firstVisibleItemIndex, lastVisibleItemIndex),
+	const visibleItemIds = useMemo(
+		() => items.slice(firstVisibleItemIndex, lastVisibleItemIndex).map(a => a.id),
 		[items, firstVisibleItemIndex, lastVisibleItemIndex]
 	);
 
-	const renderRow = useCallback((row: EntryFileRow, idx: number) => <MemoizedItemRow key={JSON.stringify(row)} {...row} isOdd={idx % 2 === 0} />, []);
+	const renderRow = useCallback((id: ItemId, idx: number) => <MemoizedItemRow key={id} id={id} isOdd={idx % 2 === 0} />, []);
 
 	useEffect(() => {
 		const measurer = measureRowHeightRef.current;
@@ -119,10 +119,10 @@ export const VirtualizedList = ({
 	return (
 		<Container ref={containerRef}>
 			<MeasureRowHeight ref={measureRowHeightRef}>
-				{renderRow(items[0], 0)}
+				{renderRow(items[0]?.id || '' as ItemId, 0)}
 			</MeasureRowHeight>
 			<CustomHeight $height={offsetTop} />
-			{visibleItems.map(renderRow)}
+			{visibleItemIds.map(renderRow)}
 			<CustomHeight $height={offsetBottom} />
 		</Container>
 	);
