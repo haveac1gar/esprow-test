@@ -231,7 +231,6 @@ export const EditableField = React.memo(({ name, id }: EditableFieldProps) => {
 	const fieldNamesTypes = useAppSelector(state => state.entryFile.fieldNamesTypes);
 	const valueType = fieldNamesTypes[name];
 
-	console.log('render editable field');
 	if (valueType === FIELD_TYPE.BOOLEAN) {
 		return <CheckboxField name={name} id={id} />;
 	}

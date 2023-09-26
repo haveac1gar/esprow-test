@@ -4,7 +4,6 @@ export type ItemId = Opaque<string, 'ItemId'>;
 export type EntryFileValue = string | number | boolean | unknown[] | Record<string, unknown>;
 export type EntryFileRow = {
   id: ItemId;
-  __renderFieldType: FIELD_TYPE;
 } & Record<string, EntryFileValue>;
 
 export type EntryFile = EntryFileRow[];
