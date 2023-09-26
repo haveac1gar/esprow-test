@@ -1,5 +1,5 @@
 import { isValid } from 'date-fns';
-import { EntryFileValue, FIELD_TYPE } from '../../../types';
+import { EntryFileValue, FIELD_TYPE } from '../types';
 
 export const getFieldType = (value: EntryFileValue | undefined) => {
 	if (typeof value === 'number') return FIELD_TYPE.NUMBER;

@@ -1,5 +1,5 @@
 import React, {
-	ChangeEvent, PropsWithChildren, useCallback, useMemo,
+	ChangeEvent, PropsWithChildren, useCallback,
 } from 'react';
 import { FIELD_TYPE, ItemId } from '../../types';
 import styled from 'styled-components';
@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import {
 	itemFieldSelector, updateField, useAppDispatch, useAppSelector,
 } from '../../state';
-import { getDateStoredValue, getDateUIValue, getFieldType } from './utils';
+import { getDateStoredValue, getDateUIValue } from '../../utils';
 
 type EditableFieldProps = {
 	name: string;
@@ -228,9 +228,10 @@ const JSONLIkeField = React.memo(({ name, id }: EditableFieldProps) => (
 ));
 
 export const EditableField = React.memo(({ name, id }: EditableFieldProps) => {
-	const value = useAppSelector(state => itemFieldSelector(state, name, id));
-	const valueType = useMemo(() => getFieldType(value), [value]);
+	const fieldNamesTypes = useAppSelector(state => state.entryFile.fieldNamesTypes);
+	const valueType = fieldNamesTypes[name];
 
+	console.log('render editable field');
 	if (valueType === FIELD_TYPE.BOOLEAN) {
 		return <CheckboxField name={name} id={id} />;
 	}

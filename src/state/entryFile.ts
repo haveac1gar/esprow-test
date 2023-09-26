@@ -1,21 +1,22 @@
 import { createSlice, type PayloadAction, createSelector } from '@reduxjs/toolkit';
 import {
-	EntryFile, EntryFileMap, EntryFileValue, ItemId,
+	EntryFile, EntryFileMap, EntryFileValue, FIELD_TYPE, ItemId,
 } from '../types';
 import { RootState } from './store';
 import { uniqueId } from 'lodash';
+import { getFieldType } from '../utils';
 
 type EntryFileState = {
 	arr: EntryFile,
 	map: EntryFileMap,
 	name: string | null;
-	fieldNames: string[]
+	fieldNamesTypes: Record<string, FIELD_TYPE>;
 };
 const initialState: EntryFileState = {
 	arr: [],
 	map: {},
 	name: null,
-	fieldNames: [],
+	fieldNamesTypes: {},
 };
 
 const entryFileSlice = createSlice({
@@ -30,7 +31,7 @@ const entryFileSlice = createSlice({
 			state.arr = action.payload.data;
 			state.map = {};
 
-			const fieldNamesSet = new Set<string>();
+			const fieldNamesTypes: Record<string, FIELD_TYPE> = {};
 
 			for (const item of state.arr) {
 				// Assuming all valid files should contain id field
@@ -45,11 +46,11 @@ const entryFileSlice = createSlice({
 				}
 
 				for (const fieldName of Object.keys(item)) {
-					fieldNamesSet.add(fieldName);
+					fieldNamesTypes[fieldName] = getFieldType(item[fieldName]);
 				}
 			}
 
-			state.fieldNames = [...fieldNamesSet.values()];
+			state.fieldNamesTypes = fieldNamesTypes;
 		},
 		sortBy: (
 			state,
