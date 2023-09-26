@@ -1,18 +1,22 @@
 import { createSlice, type PayloadAction, createSelector } from '@reduxjs/toolkit';
 import {
-	EntryFile, EntryFileMap, EntryFileRowUI, ItemId,
+	EntryFile, EntryFileMap, EntryFileValue, FIELD_TYPE, ItemId,
 } from '../types';
 import { RootState } from './store';
+import { uniqueId } from 'lodash';
+import { getFieldType } from '../utils';
 
 type EntryFileState = {
 	arr: EntryFile,
 	map: EntryFileMap,
 	name: string | null;
+	fieldNamesTypes: Record<string, FIELD_TYPE>;
 };
 const initialState: EntryFileState = {
 	arr: [],
 	map: {},
 	name: null,
+	fieldNamesTypes: {},
 };
 
 const entryFileSlice = createSlice({
@@ -27,13 +31,30 @@ const entryFileSlice = createSlice({
 			state.arr = action.payload.data;
 			state.map = {};
 
+			const fieldNamesTypes: Record<string, FIELD_TYPE> = {};
+
 			for (const item of state.arr) {
-				state.map[item.id] = item;
+				// Assuming all valid files should contain id field
+				// If id is not occured, generating it - it is still important for performance
+				if (Object.prototype.hasOwnProperty.call(item, 'id')) {
+					const id = item.id as ItemId;
+					state.map[id] = item;
+				} else {
+					const id = uniqueId() as ItemId;
+					item.id = id;
+					state.map[id] = item;
+				}
+
+				for (const fieldName of Object.keys(item)) {
+					fieldNamesTypes[fieldName] = getFieldType(item[fieldName]);
+				}
 			}
+
+			state.fieldNamesTypes = fieldNamesTypes;
 		},
 		sortBy: (
 			state,
-			action: PayloadAction<{ type: 'ASC' | 'DESC', field: keyof EntryFileRowUI }>,
+			action: PayloadAction<{ type: 'ASC' | 'DESC', field: string }>,
 		) => {
 			const { type, field } = action.payload;
 			state.arr = state.arr.sort((a, b) => {
@@ -57,8 +78,8 @@ const entryFileSlice = createSlice({
 			state,
 			action: PayloadAction<{
 				id: ItemId,
-				name: keyof EntryFileRowUI,
-				value: EntryFileRowUI[keyof EntryFileRowUI]
+				name: string,
+				value: EntryFileValue,
 			}>
 		) => {
 			const { id, name, value } = action.payload;
@@ -83,8 +104,8 @@ export default entryFileSlice.reducer;
 
 export const itemFieldSelector = createSelector(
 	(state: RootState) => state.entryFile.map,
-	(_state: RootState, _name: keyof EntryFileRowUI, id: ItemId) => id,
-	(_state: RootState, name: keyof EntryFileRowUI, _id: ItemId) => name,
+	(_state: RootState, _name: string, id: ItemId) => id,
+	(_state: RootState, name: string, _id: ItemId) => name,
 	(map, id, name) => {
 		const item = map[id];
 

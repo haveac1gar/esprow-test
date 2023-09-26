@@ -6,8 +6,8 @@ import styled from 'styled-components';
 import debounce from 'lodash/debounce';
 import noop from 'lodash/noop';
 import { calcVirtualizedList } from './utils';
-import { ITEM_ROW_HEIGHT, MemoizedItemRow } from '../ItemRow';
-import { EntryFile, EntryFileRow } from '../../types';
+import { MemoizedItemRow } from '../ItemRow';
+import { EntryFile, ItemId } from '../../types';
 
 type VirtualizedListProps = {
   items: EntryFile,
@@ -16,6 +16,7 @@ type VirtualizedListProps = {
 const Container = styled.div`
   flex: 1;
   overflow-y: scroll;
+	position: relative;
 `;
 const CustomHeight = styled.div.attrs<{ $height: number }>(props => ({
 	style: {
@@ -25,12 +26,21 @@ const CustomHeight = styled.div.attrs<{ $height: number }>(props => ({
   width: 100%;
 `;
 
+const MeasureRowHeight = styled.div`
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+	width: 100%;
+`;
+
 export const VirtualizedList = ({
 	items,
 }: VirtualizedListProps) => {
 	const [containerHeight, setContainerHeight] = useState(0);
+	const [rowHeight, setRowHeight] = useState(0);
 	const [scrollTop, setScrollTop] = useState(0);
 	const containerRef = useRef<null | HTMLDivElement>(null);
+	const measureRowHeightRef = useRef<null | HTMLDivElement>(null);
 
 	useEffect(() => {
 		const updateContainerHeight = debounce(() => {
@@ -76,25 +86,43 @@ export const VirtualizedList = ({
 	} = useMemo(() => calcVirtualizedList({
 		scrollTop,
 		containerHeight,
-		rowHeight: ITEM_ROW_HEIGHT,
+		rowHeight,
 		itemsLength: items.length,
 	}), [
+		rowHeight,
 		scrollTop,
 		containerHeight,
 		items.length,
 	]);
 
-	const visibleItems = useMemo(
-		() => items.slice(firstVisibleItemIndex, lastVisibleItemIndex),
+	const visibleItemIds = useMemo(
+		() => items.slice(firstVisibleItemIndex, lastVisibleItemIndex).map(a => a.id),
 		[items, firstVisibleItemIndex, lastVisibleItemIndex]
 	);
 
-	const renderRow = useCallback((row: EntryFileRow) => <MemoizedItemRow key={row.id} {...row} />, []);
+	const renderRow = useCallback((id: ItemId, idx: number) => <MemoizedItemRow key={id} id={id} isOdd={idx % 2 === 0} />, []);
+
+	useEffect(() => {
+		const measurer = measureRowHeightRef.current;
+		if (!measurer) return;
+
+		setRowHeight((prev) => {
+			if (prev) return prev;
+
+			const newHeight = measurer.getBoundingClientRect().height || 0;
+			if (!newHeight) return prev;
+
+			return newHeight;
+		});
+	}, [items]);
 
 	return (
 		<Container ref={containerRef}>
+			<MeasureRowHeight ref={measureRowHeightRef}>
+				{renderRow(items[0]?.id || '' as ItemId, 0)}
+			</MeasureRowHeight>
 			<CustomHeight $height={offsetTop} />
-			{visibleItems.map(renderRow)}
+			{visibleItemIds.map(renderRow)}
 			<CustomHeight $height={offsetBottom} />
 		</Container>
 	);
